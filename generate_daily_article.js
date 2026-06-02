@@ -185,6 +185,7 @@ async function generateArticle() {
         fs.writeFileSync(articlesHtmlPath, articlesHtml);
         
         console.log("Successfully updated articles.html");
+        return filename;
         
     } catch (e) {
         console.error("Error generating article:", e);
@@ -192,16 +193,52 @@ async function generateArticle() {
     }
 }
 
+async function pushToIndexNow(urls) {
+    const key = "5a4b7c8d9e0f1a2b3c4d5e6f7a8b9c0d";
+    const host = "clashx.cloud";
+    console.log("🚀 正在向搜索引擎 (IndexNow) 提交秒收录请求...");
+    
+    try {
+        const response = await fetch("https://api.indexnow.org/indexnow", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            },
+            body: JSON.stringify({
+                host: host,
+                key: key,
+                keyLocation: \`https://\${host}/\${key}.txt\`,
+                urlList: urls
+            })
+        });
+        if (response.ok) {
+            console.log("✅ 成功推送至 IndexNow (Bing/Yandex 等引擎)！");
+        } else {
+            console.error("❌ IndexNow 推送失败:", response.status, await response.text());
+        }
+    } catch (err) {
+        console.error("IndexNow error:", err);
+    }
+}
+
 async function main() {
+    const generatedUrls = [];
     for (let i = 0; i < 2; i++) {
-        console.log(`\n--- 准备生成今天第 ${i + 1} 篇文章 ---`);
-        await generateArticle();
+        console.log(\`\\n--- 准备生成今天第 \${i + 1} 篇文章 ---\`);
+        const filename = await generateArticle();
+        if (filename) {
+            generatedUrls.push(\`https://clashx.cloud/articles/\${filename}\`);
+        }
         if (i < 1) {
             console.log("等待 5 秒防止 API 频率限制...");
             await new Promise(r => setTimeout(r, 5000));
         }
     }
     console.log("今日文章生成完毕！");
+    
+    if (generatedUrls.length > 0) {
+        await pushToIndexNow(generatedUrls);
+    }
 }
 
 main();
