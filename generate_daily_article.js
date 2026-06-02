@@ -11,8 +11,7 @@ async function getBestModel() {
         .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent') && m.name.includes('gemini'))
         .map(m => m.name.replace('models/', ''));
         
-    let bestModel = availableModels.find(m => m.includes('1.5-flash'));
-    if (!bestModel) bestModel = availableModels.find(m => m.includes('1.5-pro'));
+    let bestModel = availableModels.find(m => m.includes('flash'));
     if (!bestModel) bestModel = availableModels.find(m => m.includes('pro'));
     if (!bestModel) bestModel = availableModels[0];
     
