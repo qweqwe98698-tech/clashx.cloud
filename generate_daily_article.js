@@ -50,10 +50,11 @@ const topics = [
 
 const today = new Date();
 const dateStr = today.toISOString().split('T')[0];
-const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-const filename = `${dateStr}-${randomTopic.replace(/[\/\s]/g, '-')}.html`;
 
 async function generateArticle() {
+    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+    const filename = `${dateStr}-${randomTopic.replace(/[\/\s]/g, '-')}.html`;
+    
     console.log(`Starting generation for topic: ${randomTopic}`);
     
     const prompt = `你是一个专业的网络优化与科学上网博客作者。
@@ -173,4 +174,16 @@ async function generateArticle() {
     }
 }
 
-generateArticle();
+async function main() {
+    for (let i = 0; i < 2; i++) {
+        console.log(`\n--- 准备生成今天第 ${i + 1} 篇文章 ---`);
+        await generateArticle();
+        if (i < 1) {
+            console.log("等待 5 秒防止 API 频率限制...");
+            await new Promise(r => setTimeout(r, 5000));
+        }
+    }
+    console.log("今日文章生成完毕！");
+}
+
+main();
