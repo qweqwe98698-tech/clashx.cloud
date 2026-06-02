@@ -1,10 +1,40 @@
 const fs = require('fs');
 const path = require('path');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const API_KEY = process.env.GEMINI_API_KEY;
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+// 动态探测账号支持的模型
+async function getBestModel() {
+    console.log("🔍 正在探测可用的 Gemini 模型...");
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${API_KEY}`);
+    const data = await response.json();
+    const availableModels = data.models
+        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent') && m.name.includes('gemini'))
+        .map(m => m.name.replace('models/', ''));
+        
+    let bestModel = availableModels.find(m => m.includes('1.5-flash'));
+    if (!bestModel) bestModel = availableModels.find(m => m.includes('1.5-pro'));
+    if (!bestModel) bestModel = availableModels.find(m => m.includes('pro'));
+    if (!bestModel) bestModel = availableModels[0];
+    
+    console.log(`✅ 自动选择最优模型: ${bestModel}`);
+    return bestModel;
+}
+
+async function callAI(systemPrompt, userPrompt, modelName) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+            generationConfig: { temperature: 0.7 }
+        })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(JSON.stringify(data));
+    return data.candidates[0].content.parts[0].text.trim();
+}
 
 const topics = [
     "外贸人必备的海外网络加速器挑选指南",
@@ -45,10 +75,15 @@ async function generateArticle() {
     `;
 
     try {
-        const result = await model.generateContent(prompt);
-        const response = result.response.text();
+        const modelName = await getBestModel();
         
-        const parts = response.split('|||');
+        const responseText = await callAI(
+            "你是一个专业的网络优化与科学上网博客作者。你只输出符合要求的文本内容，绝不返回markdown代码块。",
+            prompt,
+            modelName
+        );
+        
+        const parts = responseText.split('|||');
         if (parts.length !== 2) throw new Error("Invalid response format from AI");
         
         let [description, content] = parts;
