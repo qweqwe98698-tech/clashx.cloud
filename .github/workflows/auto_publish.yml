@@ -5,6 +5,9 @@ on:
     - cron: '0 2 * * *' # 每天北京时间上午 10 点 (UTC 2)
   workflow_dispatch: # 允许手动触发 (和您截图里一样)
 
+permissions:
+  contents: write
+
 jobs:
   generate-and-publish:
     runs-on: ubuntu-latest
