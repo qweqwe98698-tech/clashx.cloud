@@ -1,0 +1,35 @@
+name: Daily Article Auto Publish
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # 每天北京时间上午 10 点 (UTC 2)
+  workflow_dispatch: # 允许手动触发 (和您截图里一样)
+
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install @google/generative-ai
+
+      - name: Generate Daily Article
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node generate_daily_article.js
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Auto-generated daily article" -a || echo "No changes to commit"
+          git push
