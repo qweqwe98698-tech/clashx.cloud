@@ -235,7 +235,7 @@ async function pushToIndexNow(urls) {
             body: JSON.stringify({
                 host: host,
                 key: key,
-                keyLocation: \`https://\${host}/\${key}.txt\`,
+                keyLocation: `https://${host}/${key}.txt`,
                 urlList: urls
             })
         });
@@ -252,10 +252,10 @@ async function pushToIndexNow(urls) {
 async function main() {
     const generatedUrls = [];
     for (let i = 0; i < 2; i++) {
-        console.log(\`\\n--- 准备生成今天第 \${i + 1} 篇文章 ---\`);
+        console.log(`\n--- 准备生成今天第 ${i + 1} 篇文章 ---`);
         const filename = await generateArticle();
         if (filename) {
-            generatedUrls.push(\`https://clashx.cloud/articles/\${filename}\`);
+            generatedUrls.push(`https://clashx.cloud/articles/${filename}`);
         }
         if (i < 1) {
             console.log("等待 5 秒防止 API 频率限制...");
