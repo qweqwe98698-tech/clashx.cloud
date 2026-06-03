@@ -1,38 +1,28 @@
 const fs = require('fs');
 const path = require('path');
-const API_KEY = process.env.GEMINI_API_KEY;
+const API_KEY = process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY; // 兼容旧变量名防止忘记改
 
-// 动态探测账号支持的模型
-async function getBestModel() {
-    console.log("🔍 正在探测可用的 Gemini 模型...");
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${API_KEY}`);
-    const data = await response.json();
-    const availableModels = data.models
-        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent') && m.name.includes('gemini'))
-        .map(m => m.name.replace('models/', ''));
-        
-    let bestModel = availableModels.find(m => m.includes('flash'));
-    if (!bestModel) bestModel = availableModels.find(m => m.includes('pro'));
-    if (!bestModel) bestModel = availableModels[0];
-    
-    console.log(`✅ 自动选择最优模型: ${bestModel}`);
-    return bestModel;
-}
-
-async function callAI(systemPrompt, userPrompt, modelName) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+async function callAI(systemPrompt, userPrompt) {
+    console.log("🤖 正在调用 DeepSeek API...");
+    const url = 'https://api.deepseek.com/chat/completions';
     const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_KEY}`
+        },
         body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemPrompt }] },
-            contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-            generationConfig: { temperature: 0.7 }
+            model: 'deepseek-chat',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.7
         })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(JSON.stringify(data));
-    return data.candidates[0].content.parts[0].text.trim();
+    return data.choices[0].message.content.trim();
 }
 
 const topics = [
@@ -129,12 +119,9 @@ async function generateArticle() {
     `;
 
     try {
-        const modelName = await getBestModel();
-        
         const responseText = await callAI(
             "你是一个极其擅长蹭热点的 SEO 营销写手。严格按照请求返回三个由 ||| 分隔的部分。",
-            prompt,
-            modelName
+            prompt
         );
         
         const parts = responseText.split('|||');
