@@ -17,11 +17,16 @@ async function callAI(systemPrompt, userPrompt) {
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
             ],
-            response_format: { type: 'json_object' },
             temperature: 0.7
         })
     });
-    const data = await response.json();
+    const responseTextRaw = await response.text();
+    let data;
+    try {
+        data = JSON.parse(responseTextRaw);
+    } catch (e) {
+        throw new Error(`DeepSeek API returned non-JSON response. HTTP Status: ${response.status}. Raw Response: ${responseTextRaw}`);
+    }
     if (!response.ok) throw new Error(JSON.stringify(data));
     return data.choices[0].message.content.trim();
 }
@@ -101,42 +106,37 @@ async function generateArticle() {
        </div>
     4. **智能内链**：在正文中自然提及“光速云”、“二猫云”、“唯兔云”等测评时，加上超链接：<a href="../review-guangsu.html" style="color: var(--main-color); text-decoration: underline;">光速云</a>。
     5. **FAQ模块**：文章末尾必须包含一个 <h2>常见问题解答 (FAQ)</h2> 模块，自问自答 3 个强相关问题。
-    6. **返回格式（极其重要）**：必须返回严格的 JSON 格式（不要包含任何 markdown 代码块标记，如 \`\`\`json 等，只返回原生 JSON 字符串）。JSON 对象必须包含以下三个字段：
-       - "title": 一个极具吸引力的“震惊体”或“悬念体”文章标题（25字以内）。
-       - "description": 80 字以内的纯文本简介。
-       - "content": 正文 HTML 代码（首段用 <div class="intro"...>💡 导语：...</div> 包裹）。
+    6. **返回格式（极其重要）**：必须分为三部分，用 ||| 分隔。
+       第一部分：一个极具吸引力的“震惊体”或“悬念体”文章标题（25字以内）。
+       第二部分：80 字以内的纯文本简介。
+       第三部分：正文 HTML 代码（首段用 <div class="intro"...>💡 导语：...</div> 包裹）。绝对不要返回 markdown 代码块标记！
     
     返回示例：
-    {
-      "title": "震惊！ChatGPT大规模封号，你的节点安全吗？",
-      "description": "这是纯文本简介...",
-      "content": "<div class=\\"intro\\" style=\\"background-color: var(--secondary-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--main-color);\\"><strong>💡 导语：</strong>...</div><h2>一、核心原理解析</h2><p>正文内容...</p>[这里插入上述的 CTA 转化引导块]<h2>常见问题解答 (FAQ)</h2>..."
-    }
+    震惊！ChatGPT大规模封号，你的节点安全吗？
+    |||
+    这是纯文本简介...
+    |||
+    <div class="intro" style="background-color: var(--secondary-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--main-color);"><strong>💡 导语：</strong>...</div>
+    <h2>一、核心原理解析</h2>
+    <p>正文内容...</p>
+    [这里插入上述的 CTA 转化引导块]
+    <h2>二、进阶技巧</h2>...
+    <h2>常见问题解答 (FAQ)</h2>...
     `;
 
     try {
         const responseText = await callAI(
-            "你是一个极其擅长蹭热点的 SEO 营销写手。严格按照请求返回 JSON 格式数据。不要输出任何其他解释文本，只输出合法且可解析的 JSON 字符串！",
+            "你是一个极其擅长蹭热点的 SEO 营销写手。严格按照请求返回三个由 ||| 分隔的部分。",
             prompt
         );
         
-        // 尝试清理可能的 markdown 代码块标记
-        const cleanedText = responseText.replace(/^```json/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();
+        const parts = responseText.split('|||');
+        if (parts.length !== 3) throw new Error("Invalid response format from AI: " + responseText);
         
-        let articleData;
-        try {
-            articleData = JSON.parse(cleanedText);
-        } catch (parseError) {
-            throw new Error(`JSON parsing failed. AI Response: ${cleanedText}`);
-        }
-
-        if (!articleData.title || !articleData.description || !articleData.content) {
-            throw new Error("Missing required fields in JSON from AI.");
-        }
-        
-        let articleTitle = articleData.title.trim().replace(/[#*\n]/g, '');
-        let description = articleData.description.trim().replace(/```/g, '');
-        let content = articleData.content.trim().replace(/^```html/g, '').replace(/```$/g, '').trim();
+        let [articleTitle, description, content] = parts;
+        articleTitle = articleTitle.trim().replace(/[#*\n]/g, '');
+        description = description.trim().replace(/```/g, '');
+        content = content.trim().replace(/^```html/g, '').replace(/```$/g, '').trim();
 
         // 确保文件名合法
         const safeTitle = articleTitle.replace(/[\/\s：？！，|\\*?"<>]/g, '-').substring(0, 30);
