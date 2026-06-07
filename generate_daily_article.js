@@ -1,4 +1,24 @@
 const fs = require('fs');
+
+// --- 防止重复生成逻辑 ---
+{
+    const _fs = require('fs');
+    const _path = require('path');
+    const _now = new Date();
+    const _beijingTime = new Date(_now.getTime() + 8 * 60 * 60 * 1000);
+    const _today = _beijingTime.toISOString().split('T')[0];
+    const _marker = _path.join(__dirname, '.daily_run_date');
+    if (_fs.existsSync(_marker)) {
+        const _last = _fs.readFileSync(_marker, 'utf8');
+        if (_last === _today) {
+            console.log("检测到今日已生成过文章，跳过生成以防重复！");
+            process.exit(0);
+        }
+    }
+    _fs.writeFileSync(_marker, _today, 'utf8');
+}
+// ------------------------
+
 const path = require('path');
 const API_KEY = process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY; // 兼容旧变量名防止忘记改
 
@@ -54,7 +74,8 @@ const topics = [
 ];
 
 const today = new Date();
-const dateStr = today.toISOString().split('T')[0];
+const beijingTime = new Date(today.getTime() + 8 * 60 * 60 * 1000);
+const dateStr = beijingTime.toISOString().split('T')[0];
 
 async function getRealTimeHotTopic() {
     try {
@@ -106,7 +127,8 @@ async function generateArticle() {
        </div>
     4. **智能内链**：在正文中自然提及“光速云”、“二猫云”、“唯兔云”等测评时，加上超链接：<a href="../review-guangsu.html" style="color: var(--main-color); text-decoration: underline;">光速云</a>。
     5. **FAQ模块**：文章末尾必须包含一个 <h2>常见问题解答 (FAQ)</h2> 模块，自问自答 3 个强相关问题。
-    6. **返回格式（极其重要）**：必须分为三部分，用 ||| 分隔。
+    6. **配图与Schema**：在正文顶部插入一个具有赛博朋克或网络安全风格的免版权配图：<img src="https://source.unsplash.com/800x400/?cybersecurity,vpn" alt="VPN Network" style="width:100%; border-radius:10px; margin-bottom:1.5rem;" loading="lazy">。并在 HTML 最后追加这 3 个 FAQ 的 JSON-LD Schema (放在 <script type="application/ld+json"> 中)。
+    7. **返回格式（极其重要）**：必须分为三部分，用 ||| 分隔。
        第一部分：一个极具吸引力的“震惊体”或“悬念体”文章标题（25字以内）。
        第二部分：80 字以内的纯文本简介。
        第三部分：正文 HTML 代码（首段用 <div class="intro"...>💡 导语：...</div> 包裹）。绝对不要返回 markdown 代码块标记！
@@ -150,7 +172,14 @@ async function generateArticle() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${articleTitle} - ClashX 总控</title>
     <meta name="description" content="${description}">
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="${articleTitle}">
+    <meta property="og:description" content="${description}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://clashx.cloud/articles/${filename}">
+    <meta property="og:image" content="https://source.unsplash.com/800x400/?cybersecurity,vpn">
     <link rel="stylesheet" href="../style.css">
+    <link rel="manifest" href="../manifest.json">
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
@@ -185,6 +214,31 @@ async function generateArticle() {
     </header>
 
     <main class="section-container" style="background-color: white; padding: 3rem; border: 2px solid var(--border-color); border-radius: var(--border-handdrawn); box-shadow: 4px 4px 0px rgba(68, 64, 60, 0.1); margin-top: 8rem;">
+        
+        <nav aria-label="breadcrumb" class="breadcrumb">
+            <a href="../index.html">首页</a> &gt; <a href="../articles.html">最新文章</a> &gt; ${articleTitle}
+        </nav>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "首页导航",
+            "item": "https://clashx.cloud/"
+          },{
+            "@type": "ListItem",
+            "position": 2,
+            "name": "最新文章",
+            "item": "https://clashx.cloud/articles.html"
+          },{
+            "@type": "ListItem",
+            "position": 3,
+            "name": "${articleTitle}"
+          }]
+        }
+        </script>
         <article>
             <h1 style="border-bottom: 2px dashed var(--main-color); padding-bottom: 1rem; margin-bottom: 2rem;">${articleTitle}</h1>
             <div class="content" style="line-height: 1.8; font-size: 1.1rem;">
@@ -197,6 +251,22 @@ async function generateArticle() {
         </div>
     </main>
     <script src="../script.js"></script>
+
+    <!-- Mobile Sticky CTA -->
+    <div class="mobile-sticky-cta">
+        <a href="../#airports" class="cta-text">🔥 限时特惠：获取 2026 最新稳定高速机场 🚀</a>
+        <a href="../#airports" class="cta-btn">立即查看</a>
+    </div>
+
+    <!-- WeChat/QQ Mask -->
+    <div id="wechat-mask" class="wechat-mask">
+        <div class="mask-content">
+            <span class="arrow">↗</span>
+            <p>为了获得最佳体验与正常访问</p>
+            <p>请点击右上角选择在<strong>浏览器</strong>中打开</p>
+        </div>
+    </div>
+
 </body>
 </html>`;
 
@@ -255,6 +325,26 @@ async function pushToIndexNow(urls) {
     }
 }
 
+
+function updateSitemap(urls) {
+    const _fs = require('fs');
+    const _path = require('path');
+    const sitemapPath = _path.join(__dirname, 'sitemap.xml');
+    if (!_fs.existsSync(sitemapPath)) return;
+    
+    let sitemap = _fs.readFileSync(sitemapPath, 'utf8');
+    const todayStr = new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    let newEntries = "";
+    urls.forEach(url => {
+        newEntries += '\n  <url>\n    <loc>' + url + '</loc>\n    <lastmod>' + todayStr + '</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>';
+    });
+    
+    sitemap = sitemap.replace('</urlset>', newEntries + '\n</urlset>');
+    _fs.writeFileSync(sitemapPath, sitemap, 'utf8');
+    console.log("✅ 成功更新 sitemap.xml");
+}
+
 async function main() {
     const generatedUrls = [];
     for (let i = 0; i < 2; i++) {
@@ -272,6 +362,7 @@ async function main() {
     
     if (generatedUrls.length > 0) {
         await pushToIndexNow(generatedUrls);
+        updateSitemap(generatedUrls);
     }
 }
 

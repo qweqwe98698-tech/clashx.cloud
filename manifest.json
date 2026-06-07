@@ -1,0 +1,21 @@
+{
+  "name": "ClashX 总控",
+  "short_name": "ClashX",
+  "description": "精选高性价比机场，提供稳定梯子加速服务",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFBEB",
+  "theme_color": "#F97316",
+  "icons": [
+    {
+      "src": "/avatar.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/avatar.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
