@@ -116,4 +116,17 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-07-震惊-Remedy新作开发曝光-你的节点能跟上吗-.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-07-Remedy新作炸裂-你的节点配得上4K画质吗-.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
