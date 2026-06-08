@@ -129,4 +129,17 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-08-震惊-Switch摇杆漂移-竟暴露你节点的致命弱点-.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-08-B站大会员138元-背后藏着一个你不得不防的陷阱-.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
