@@ -142,4 +142,17 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-09-震惊-60部大片定档-你的网速能抢到票吗-.html</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-09-震惊-iOS-27-闪退-你的机场还稳吗-.html</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
