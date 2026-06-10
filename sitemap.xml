@@ -155,4 +155,17 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-10-华为HDC-2026泄露天机-你的鸿蒙NEXT座舱卡成PPT.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://clashx.cloud/articles/2026-06-10-华为HDC-2026泄露天机-你的鸿蒙座驾竟需这个.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
