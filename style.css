@@ -61,6 +61,8 @@ canvas#bg-canvas {
     padding: 0.2rem 0.5rem;
     border-radius: var(--border-handdrawn);
     border: 2px solid var(--border-color);
+    display: inline-block;
+    white-space: nowrap;
 }
 
 .nav-links a {
@@ -69,6 +71,7 @@ canvas#bg-canvas {
     color: var(--text-color);
     font-weight: 600;
     position: relative;
+    white-space: nowrap;
 }
 
 .nav-links a:hover::after {
@@ -374,7 +377,7 @@ h1, h2, h3 {
 }
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: center;
 }
 .nav-links a {
@@ -674,7 +677,7 @@ footer {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .nav-links {
         display: none;
         flex-direction: column;

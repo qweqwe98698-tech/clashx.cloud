@@ -28,6 +28,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node generate_daily_article.js
 
+      - name: Update Apple ID Passwords
+        run: node update_apple_id.js
+
       - name: Commit and Push changes
         run: |
           git config --local user.email "action@github.com"
