@@ -146,16 +146,32 @@ async function generateArticle() {
     <h2>常见问题解答 (FAQ)</h2>...
     `;
 
+    let responseText = "";
+    let parts = [];
     try {
-        const responseText = await callAI(
-            "你是一个极其擅长蹭热点的 SEO 营销写手。严格按照请求返回三个由 ||| 分隔的部分。",
-            prompt
-        );
-        
-        const parts = responseText.split('|||');
-        if (parts.length !== 3) throw new Error("Invalid response format from AI: " + responseText);
-        
-        let [articleTitle, description, content] = parts;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+            responseText = await callAI(
+                "你是一个极其擅长蹭热点的 SEO 营销写手。严格按照请求返回三个由 ||| 分隔的部分（标题|||简介|||正文HTML）。不要输出任何多余的解释。",
+                prompt
+            );
+            parts = responseText.split('|||');
+            if (parts.length >= 3) {
+                // 如果超过3部分，把后面的合并起来作为正文
+                if (parts.length > 3) {
+                    const extra = parts.splice(2);
+                    parts.push(extra.join('|||'));
+                }
+                break;
+            }
+            console.warn(`Attempt ${attempt} failed: Invalid format. Retrying...`);
+        } catch (err) {
+            console.error(`Attempt ${attempt} API error:`, err.message);
+        }
+        if (attempt === 3) throw new Error("Invalid response format from AI after 3 attempts: " + responseText);
+    }
+    
+    let [articleTitle, description, content] = parts;
         articleTitle = articleTitle.trim().replace(/[#*\n]/g, '');
         description = description.trim().replace(/```/g, '');
         content = content.trim().replace(/^```html/g, '').replace(/```$/g, '').trim();
