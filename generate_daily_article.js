@@ -9,9 +9,11 @@ const path = require('path');
     const _marker = path.join(__dirname, '.daily_run_date');
     if (fs.existsSync(_marker)) {
         const _last = fs.readFileSync(_marker, 'utf8');
-        if (_last === _today) {
+        if (_last === _today && process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch') {
             console.log("检测到今日已生成过文章，跳过生成以防重复！");
             process.exit(0);
+        } else if (_last === _today) {
+            console.log("检测到今日已生成过文章，但由于是手动触发 (workflow_dispatch)，允许再次生成！");
         }
     }
     fs.writeFileSync(_marker, _today, 'utf8');
