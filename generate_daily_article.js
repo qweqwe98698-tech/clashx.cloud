@@ -281,7 +281,7 @@ async function generateArticle() {
         
     } catch (e) {
         console.error("❌ Error generating article:", e);
-        // 不退出，如果是批量生成可能还有下一篇
+        process.exit(1); // 强制报错退出，让 GitHub Action 标红
     }
     return null;
 }
