@@ -76,14 +76,14 @@ async function generateArticle() {
     const promptTopic = topics[Math.floor(Math.random() * topics.length)];
     console.log(`📌 本次生成主题: ${promptTopic}`);
     
-    const prompt = `你是一个非常专业、客观的网络优化（科学上网）技术博客作者。
-    请根据以下主题，写一篇字数约 1200 字的高质量、硬核且对读者有极高实用价值的 SEO 引流科普文章。
+    const prompt = `你是一个非常专业、资深的网络工程师和科学上网技术博主。
+    请根据以下主题，写一篇字数必须在 2000 字以上的高质量、极其硬核、内容极其丰富且对读者有极高实用价值的深度长文科普指南。
     主题：${promptTopic}
     
     核心要求：
-    1. **坚决杜绝标题党**：标题和正文严禁使用“震惊”、“曝光”、“天机”、“泄漏”等低端营销号词汇。标题必须客观、专业，带有“指南”、“解析”、“排障教程”等字眼。
-    2. 语气专业、客观，结构严密，有理有据。分析原因时要深入底层逻辑（比如 IP 纯净度、DNS 污染、中转线路原理等），给出解决方案时要切实可行。
-    3. 文章排版为 HTML 格式（只输出内部结构，不用 <html><body>）。使用 <h2> 作为主标题，<h3> 作为小标题，<p> 段落，<ul> 列表，重点词汇用 <strong> 加粗。
+    1. **坚决杜绝标题党与废话**：标题和正文严禁使用“震惊”、“曝光”等低端词汇。文章不能有任何 AI 味的客套话或水字数废话。
+    2. **极其丰富、专业、详细**：分析原因时必须深入到底层网络协议层面（例如详细解释 TCP/UDP, BGP路由, IPLC物理专线原理, DNS污染机制等）；给出解决方案时，必须提供详尽的 Step-by-Step 步骤、多场景排错方法。
+    3. 文章排版为 HTML 格式（只输出内部结构，不用 <html><body>）。使用 <h2> 作为主标题，<h3> 作为小标题，<p> 段落，<ul> 列表，重点词汇用 <strong> 加粗，必要时使用 <blockquote> 或 <code> 增加排版层次感。
     4. **强力转化引导 (CTA)**：在文章的正文中间或第一部分之后，强制插入以下转化代码（直接输出这段 HTML 即可，不用修改）：
        <div style="background: linear-gradient(135deg, var(--main-color) 0%, #ff8a00 100%); padding: 1.5rem; border-radius: 12px; text-align: center; margin: 2rem 0; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2); color: white;">
            <h3 style="color: white; margin-top: 0;">🚀 寻找稳定不卡的科学上网方案？</h3>
