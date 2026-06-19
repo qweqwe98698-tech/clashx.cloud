@@ -156,7 +156,7 @@ async function generateArticle() {
     <meta property="og:description" content="${description}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://clashx.cloud/articles/${filename}">
-    <meta property="og:image" content="https://source.unsplash.com/800x400/?cybersecurity,network">
+    <meta property="og:image" content="https://image.pollinations.ai/prompt/${encodeURIComponent(articleTitle + ' Cyberpunk tech network Japanese manga style, high quality')}?width=1200&height=600&nologo=true">
     <link rel="stylesheet" href="../style.css">
     <link rel="manifest" href="../manifest.json">
 </head>
@@ -227,6 +227,7 @@ async function generateArticle() {
         }
         </script>
         <article>
+            <img src="https://image.pollinations.ai/prompt/${encodeURIComponent(articleTitle + ' Cyberpunk tech network Japanese manga style, high quality')}?width=1200&height=600&nologo=true" alt="${articleTitle}" style="width:100%; border-radius:12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); margin-bottom: 2rem; display:block;">
             <h1 style="border-bottom: 2px dashed var(--main-color); padding-bottom: 1rem; margin-bottom: 2rem;">${articleTitle}</h1>
             <div class="content" style="line-height: 1.8; font-size: 1.1rem; color: #333;">
                 ${content}
@@ -285,6 +286,36 @@ async function generateArticle() {
     return null;
 }
 
+async function pushToGoogleAndBaidu(urls) {
+    // 1. 强行 ping Google 提交 Sitemap
+    try {
+        console.log("🚀 正在向 Google 提交 Sitemap Ping...");
+        const res = await fetch("https://www.google.com/ping?sitemap=https://clashx.cloud/sitemap.xml");
+        if (res.ok) console.log("✅ 成功 Ping Google！");
+    } catch (e) {
+        console.error("❌ Google Ping 失败", e);
+    }
+
+    // 2. 百度秒收录 API (需在 GitHub Secrets 配置 BAIDU_TOKEN)
+    const baiduToken = process.env.BAIDU_TOKEN;
+    if (baiduToken) {
+        try {
+            console.log("🚀 正在向百度推送秒收录...");
+            const res = await fetch(`http://data.zz.baidu.com/urls?site=https://clashx.cloud&token=${baiduToken}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: urls.join('\n')
+            });
+            const data = await res.json();
+            console.log("✅ 百度推送结果：", data);
+        } catch (e) {
+            console.error("❌ 百度推送失败", e);
+        }
+    } else {
+        console.log("⚠️ 未检测到 BAIDU_TOKEN 环境变量，跳过百度秒收录推送。");
+    }
+}
+
 async function pushToIndexNow(urls) {
     const key = "5a4b7c8d9e0f1a2b3c4d5e6f7a8b9c0d";
     const host = "clashx.cloud";
@@ -337,8 +368,9 @@ async function main() {
     const filename = await generateArticle();
     if (filename) {
         generatedUrls.push(`https://clashx.cloud/articles/${filename}`);
-        await pushToIndexNow(generatedUrls);
         updateSitemap(generatedUrls);
+        await pushToIndexNow(generatedUrls);
+        await pushToGoogleAndBaidu(generatedUrls);
     }
     console.log("✅ 今日优质文章生成完毕！");
 }
