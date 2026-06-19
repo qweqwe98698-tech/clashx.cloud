@@ -24,20 +24,35 @@ const template = (title, description, keywords, content, activeLink) => `<!DOCTY
                 <a href="../index.html">✨ ClashX 总控 Prompt</a>
             </div>
             <nav class="nav-links" id="nav-links">
-                <a href="../index.html">首页导航</a>
-                <a href="../nav.html">网址导航</a>\n                <a href="../free-id.html">免费ID共享</a>
+                <a href="../index.html" ${activeLink === 'index' ? 'class="active"' : ''}>首页导航</a>
+                <a href="../nav.html" ${activeLink === 'nav' ? 'class="active"' : ''}>网址导航</a>
+                <a href="../free-id.html" ${activeLink === 'free-id' ? 'class="active"' : ''}>免费ID共享</a>
                 <div class="dropdown">
                     <a href="javascript:void(0)" class="dropbtn">机场评测 ▾</a>
                     <div class="dropdown-content">
                         <a href="../review-guangsu.html">光速云评测</a>
+                        <a href="../review-飞猫云.html">飞猫云评测</a>
+                        <a href="../review-全球云.html">全球云评测</a>
+                        <a href="../review-唯兔云.html">唯兔云评测</a>
                         <a href="../review-ermao.html">二猫云评测</a>
+                        <a href="../review-极连云.html">极连云评测</a>
+                        <a href="../review-光年梯.html">光年梯评测</a>
+                        <a href="../review-山水云.html">山水云评测</a>
+                        <a href="../review-星岛梦.html">星岛梦评测</a>
+                        <a href="../review-u1s1.html">u1s1评测</a>
                         <a href="../all-reviews.html" style="border-top: 1px dashed var(--main-color); margin-top: 0.5rem; color: #EA580C; font-weight: bold;">查看所有评测</a>
                     </div>
                 </div>
-                <a href="../articles.html">最新文章</a>
-                <a href="../tutorials.html">使用教程</a>
+                <a href="../articles.html" ${activeLink === 'articles' ? 'class="active"' : ''}>最新文章</a>
+                <a href="../tutorials.html" ${activeLink === 'tutorials' ? 'class="active"' : ''}>使用教程</a>
                 <a href="../index.html#faq">常见问题</a>
+                <a href="../index.html#about">关于我</a>
             </nav>
+            <div class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 

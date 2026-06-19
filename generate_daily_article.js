@@ -1,26 +1,24 @@
 const fs = require('fs');
+const path = require('path');
 
 // --- 防止重复生成逻辑 ---
 {
-    const _fs = require('fs');
-    const _path = require('path');
     const _now = new Date();
     const _beijingTime = new Date(_now.getTime() + 8 * 60 * 60 * 1000);
     const _today = _beijingTime.toISOString().split('T')[0];
-    const _marker = _path.join(__dirname, '.daily_run_date');
-    if (_fs.existsSync(_marker)) {
-        const _last = _fs.readFileSync(_marker, 'utf8');
+    const _marker = path.join(__dirname, '.daily_run_date');
+    if (fs.existsSync(_marker)) {
+        const _last = fs.readFileSync(_marker, 'utf8');
         if (_last === _today) {
             console.log("检测到今日已生成过文章，跳过生成以防重复！");
             process.exit(0);
         }
     }
-    _fs.writeFileSync(_marker, _today, 'utf8');
+    fs.writeFileSync(_marker, _today, 'utf8');
 }
 // ------------------------
 
-const path = require('path');
-const API_KEY = process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY; // 兼容旧变量名防止忘记改
+const API_KEY = process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY; 
 
 async function callAI(systemPrompt, userPrompt) {
     console.log("🤖 正在调用 DeepSeek API...");
@@ -51,98 +49,64 @@ async function callAI(systemPrompt, userPrompt) {
     return data.choices[0].message.content.trim();
 }
 
+// 核心长尾流量词库（不再抓取泛科技新闻，专注强相关需求）
 const topics = [
-    // 解决报错与痛点类 (高转化长尾词)
-    "Netflix 提示使用代理怎么办？2026年最新解锁流媒体指南",
-    "ChatGPT 报 Oops 无法登录？如何选择纯净原生 IP 节点",
-    "晚高峰机场节点突然变慢卡顿？排查本地网络与节点限速技巧",
-    "Clash 订阅更新失败、超时怎么解决？快速恢复网络连接",
-    "YouTube 4K 视频一直缓冲？如何辨别真假 IPLC 专线",
-    // 新手教程与下载类 (小白流量)
-    "2026年苹果 iOS 没有美区 ID 怎么下载 Shadowrocket 小火箭？",
-    "Clash Verge Rev 汉化版最新下载与图文导入教程",
-    "Mac 电脑科学上网最佳实践：ClashX 与 Verge Rev 对比",
-    "Android 手机 v2rayNG 与 Clash for Android 哪个更好用？",
-    // 宏观科普与避坑类
-    "外贸人必备的海外网络加速器挑选指南",
-    "跨境电商独立站卖家如何选择稳定的代理节点",
-    "2026年还在用免费梯子？深度解析免费VPN的隐私陷阱",
-    "游戏玩家该买机场还是加速器？全面对比与分析",
-    "什么是双端加密隧道？中转机场为什么比直连更安全",
-    "机场经常被墙？了解 BGP 与 IPLC 线路的底层逻辑",
-    "一元机场、年付几十块的机场靠谱吗？深度揭秘跑路套路"
+    "ChatGPT 报 Access denied 无法登录？如何选择防封的原生 IP 节点",
+    "Netflix 代理检测报错（M7111-5059）怎么办？2026年最新解锁流媒体指南",
+    "跨境电商独立站卖家如何选择稳定且伪装度高的海外代理节点",
+    "游戏玩家该买机场还是游戏加速器？延迟与丢包率全面对比分析",
+    "TikTok 运营总是被限流零播放？解析原生 IP 节点与家宽代理的区别",
+    "晚高峰看 YouTube 4K 视频一直缓冲？如何辨别并选购物超所值的 IPLC 专线",
+    "Clash 订阅更新失败、节点全部超时怎么解决？手把手排障指南",
+    "外贸人必备：安全稳定收发 Gmail 与访问 WhatsApp 的网络配置心得",
+    "Midjourney / Claude 频频封号？教你如何通过纯净 IP 规避风控",
+    "2026年苹果 iOS 没有美区 ID 怎么下载使用 Shadowrocket 小火箭？",
+    "Android 手机 v2rayNG 与 Clash Meta for Android 哪个更省电好用？",
+    "什么是双端加密隧道？中转机场为什么比直连更稳定安全",
+    "一元机场、年付十几块的极低价机场靠谱吗？深度揭秘行业跑路套路",
+    "机场经常被墙导致失联？带你深入了解 BGP 与 IPLC 线路的底层逻辑"
 ];
 
 const today = new Date();
 const beijingTime = new Date(today.getTime() + 8 * 60 * 60 * 1000);
 const dateStr = beijingTime.toISOString().split('T')[0];
 
-async function getRealTimeHotTopic() {
-    try {
-        console.log("🔍 正在抓取今日科技热点...");
-        // Fetch IT Home RSS for real-time tech news
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        const response = await fetch("https://www.ithome.com/rss/", { signal: controller.signal });
-        clearTimeout(timeoutId);
-        
-        const xml = await response.text();
-        const matches = [...xml.matchAll(/<title>(.*?)<\/title>/g)];
-        const titles = matches.map(m => m[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1')).filter(t => t && !t.includes("IT之家") && t.length > 10);
-        
-        if (titles.length > 0) {
-            // Pick a random hot topic from the top 5
-            return titles[Math.floor(Math.random() * Math.min(5, titles.length))];
-        }
-    } catch (e) {
-        console.log("⚠️ 抓取实时热点失败，使用后备静态选题...");
-    }
-    return null;
-}
-
 async function generateArticle() {
-    let baseTopic = topics[Math.floor(Math.random() * topics.length)];
-    const hotNews = await getRealTimeHotTopic();
+    // 随机抽取一个核心话题
+    const promptTopic = topics[Math.floor(Math.random() * topics.length)];
+    console.log(`📌 本次生成主题: ${promptTopic}`);
     
-    let promptTopic = baseTopic;
-    if (hotNews) {
-        promptTopic = `今天的全网突发科技热点是：【${hotNews}】。请巧妙地结合这个热点事件作为引子（比如分析该事件对网络、隐私或开发者的影响），顺理成章地引出“为什么我们需要一个高速稳定的海外网络节点（机场）”，并给出一篇高质量的避坑与选购指南。`;
-        console.log(`🔥 成功截流热点: ${hotNews}`);
-    } else {
-        console.log(`Starting generation for static topic: ${baseTopic}`);
-    }
-    
-    const prompt = `你是一个专业的网络优化与科学上网博客作者，同时也是个“蹭热点”的高手。
-    请根据以下主题要求，写一篇字数约 1000 字的顶级 SEO 引流文章：
-    主题要求：${promptTopic}
+    const prompt = `你是一个非常专业、客观的网络优化（科学上网）技术博客作者。
+    请根据以下主题，写一篇字数约 1200 字的高质量、硬核且对读者有极高实用价值的 SEO 引流科普文章。
+    主题：${promptTopic}
     
     核心要求：
-    1. 语气专业、客观，采用“手账风”的亲切口吻，制造焦虑并给出解决方案。
-    2. 文章排版为 HTML 格式（只输出内部结构，不用 <html><body>）。使用 <h2> 作为主标题，<h3> 作为小标题，<p> 段落，<ul> 列表，重点词汇用 <strong> 加粗。
-    3. **强力转化引导 (CTA)**：在文章的正文中间或第一段之后，强制插入以下转化代码：
+    1. **坚决杜绝标题党**：标题和正文严禁使用“震惊”、“曝光”、“天机”、“泄漏”等低端营销号词汇。标题必须客观、专业，带有“指南”、“解析”、“排障教程”等字眼。
+    2. 语气专业、客观，结构严密，有理有据。分析原因时要深入底层逻辑（比如 IP 纯净度、DNS 污染、中转线路原理等），给出解决方案时要切实可行。
+    3. 文章排版为 HTML 格式（只输出内部结构，不用 <html><body>）。使用 <h2> 作为主标题，<h3> 作为小标题，<p> 段落，<ul> 列表，重点词汇用 <strong> 加粗。
+    4. **强力转化引导 (CTA)**：在文章的正文中间或第一部分之后，强制插入以下转化代码（直接输出这段 HTML 即可，不用修改）：
        <div style="background: linear-gradient(135deg, var(--main-color) 0%, #ff8a00 100%); padding: 1.5rem; border-radius: 12px; text-align: center; margin: 2rem 0; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2); color: white;">
            <h3 style="color: white; margin-top: 0;">🚀 寻找稳定不卡的科学上网方案？</h3>
            <p style="color: rgba(255,255,255,0.9); margin-bottom: 1.5rem;">查看博主每日测速、晚高峰稳定 4K 的 2026 最新精选榜单</p>
            <a href="../index.html" style="background-color: white; color: var(--main-color); padding: 0.8rem 2rem; border-radius: 30px; font-weight: bold; text-decoration: none; display: inline-block; transition: transform 0.3s;">点击查看高性价比机场推荐榜单</a>
        </div>
-    4. **智能内链**：在正文中自然提及“光速云”、“二猫云”、“唯兔云”等测评时，加上超链接：<a href="../review-guangsu.html" style="color: var(--main-color); text-decoration: underline;">光速云</a>。
-    5. **FAQ模块**：文章末尾必须包含一个 <h2>常见问题解答 (FAQ)</h2> 模块，自问自答 3 个强相关问题。
-    6. **配图与Schema**：在正文顶部插入一个具有赛博朋克或网络安全风格的免版权配图：<img src="https://source.unsplash.com/800x400/?cybersecurity,vpn" alt="VPN Network" style="width:100%; border-radius:10px; margin-bottom:1.5rem;" loading="lazy">。并在 HTML 最后追加这 3 个 FAQ 的 JSON-LD Schema (放在 <script type="application/ld+json"> 中)。
+    5. **智能内链**：在正文中自然提及“光速云”、“唯兔云”、“飞猫云”等评测机场时，加上超链接：<a href="../review-guangsu.html" style="color: var(--main-color); text-decoration: underline;">光速云</a>。
+    6. **FAQ模块**：文章末尾必须包含一个 <h2>常见问题解答 (FAQ)</h2> 模块，自问自答 3 个强相关问题。
     7. **返回格式（极其重要）**：必须分为三部分，用 ||| 分隔。
-       第一部分：一个极具吸引力的“震惊体”或“悬念体”文章标题（25字以内）。
-       第二部分：80 字以内的纯文本简介。
+       第一部分：一个专业且具吸引力的 SEO 文章标题（25字以内，不要带标点）。
+       第二部分：80 字以内的纯文本简介（Meta Description）。
        第三部分：正文 HTML 代码（首段用 <div class="intro"...>💡 导语：...</div> 包裹）。绝对不要返回 markdown 代码块标记！
     
     返回示例：
-    震惊！ChatGPT大规模封号，你的节点安全吗？
+    ChatGPT 报错 Access denied？2026 原生 IP 节点防封指南
     |||
     这是纯文本简介...
     |||
     <div class="intro" style="background-color: var(--secondary-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; border-left: 4px solid var(--main-color);"><strong>💡 导语：</strong>...</div>
-    <h2>一、核心原理解析</h2>
+    <h2>一、为什么会被封号或拦截？</h2>
     <p>正文内容...</p>
     [这里插入上述的 CTA 转化引导块]
-    <h2>二、进阶技巧</h2>...
+    <h2>二、原生 IP 与广播 IP 的区别</h2>...
     <h2>常见问题解答 (FAQ)</h2>...
     `;
 
@@ -150,28 +114,27 @@ async function generateArticle() {
     let parts = [];
     try {
         for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-            responseText = await callAI(
-                "你是一个极其擅长蹭热点的 SEO 营销写手。严格按照请求返回三个由 ||| 分隔的部分（标题|||简介|||正文HTML）。不要输出任何多余的解释。",
-                prompt
-            );
-            parts = responseText.split('|||');
-            if (parts.length >= 3) {
-                // 如果超过3部分，把后面的合并起来作为正文
-                if (parts.length > 3) {
-                    const extra = parts.splice(2);
-                    parts.push(extra.join('|||'));
+            try {
+                responseText = await callAI(
+                    "你是一个资深的 SEO 技术写手。严格按照请求返回三个由 ||| 分隔的部分（标题|||简介|||正文HTML）。不要输出任何多余的解释。",
+                    prompt
+                );
+                parts = responseText.split('|||');
+                if (parts.length >= 3) {
+                    if (parts.length > 3) {
+                        const extra = parts.splice(2);
+                        parts.push(extra.join('|||'));
+                    }
+                    break;
                 }
-                break;
+                console.warn(`Attempt ${attempt} failed: Invalid format. Retrying...`);
+            } catch (err) {
+                console.error(`Attempt ${attempt} API error:`, err.message);
             }
-            console.warn(`Attempt ${attempt} failed: Invalid format. Retrying...`);
-        } catch (err) {
-            console.error(`Attempt ${attempt} API error:`, err.message);
+            if (attempt === 3) throw new Error("Invalid response format from AI after 3 attempts.");
         }
-        if (attempt === 3) throw new Error("Invalid response format from AI after 3 attempts: " + responseText);
-    }
-    
-    let [articleTitle, description, content] = parts;
+        
+        let [articleTitle, description, content] = parts;
         articleTitle = articleTitle.trim().replace(/[#*\n]/g, '');
         description = description.trim().replace(/```/g, '');
         content = content.trim().replace(/^```html/g, '').replace(/```$/g, '').trim();
@@ -193,7 +156,7 @@ async function generateArticle() {
     <meta property="og:description" content="${description}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://clashx.cloud/articles/${filename}">
-    <meta property="og:image" content="https://source.unsplash.com/800x400/?cybersecurity,vpn">
+    <meta property="og:image" content="https://source.unsplash.com/800x400/?cybersecurity,network">
     <link rel="stylesheet" href="../style.css">
     <link rel="manifest" href="../manifest.json">
 </head>
@@ -206,31 +169,38 @@ async function generateArticle() {
             </div>
             <nav class="nav-links" id="nav-links">
                 <a href="../index.html">首页导航</a>
-                <a href="../nav.html">网址导航</a>\n                <a href="../free-id.html">免费ID共享</a>
+                <a href="../nav.html">网址导航</a>
+                <a href="../free-id.html">免费ID共享</a>
                 <div class="dropdown">
                     <a href="javascript:void(0)" class="dropbtn">机场评测 ▾</a>
                     <div class="dropdown-content">
                         <a href="../review-guangsu.html">光速云评测</a>
-                        <a href="../review-ermao.html">二猫云评测</a>
-                        <a href="../review-唯兔云.html">唯兔云评测</a>
-                        <a href="../review-极连云.html">极连云评测</a>
+                        <a href="../review-飞猫云.html">飞猫云评测</a>
                         <a href="../review-全球云.html">全球云评测</a>
+                        <a href="../review-唯兔云.html">唯兔云评测</a>
+                        <a href="../review-ermao.html">二猫云评测</a>
+                        <a href="../review-极连云.html">极连云评测</a>
                         <a href="../review-光年梯.html">光年梯评测</a>
                         <a href="../review-山水云.html">山水云评测</a>
                         <a href="../review-星岛梦.html">星岛梦评测</a>
                         <a href="../review-u1s1.html">u1s1评测</a>
-                        <a href="../review-飞猫云.html">飞猫云评测</a>
                         <a href="../all-reviews.html" style="border-top: 1px dashed var(--main-color); margin-top: 0.5rem; color: #EA580C; font-weight: bold;">查看所有评测</a>
                     </div>
                 </div>
-                <a href="../articles.html" style="color: var(--main-color);">最新文章</a>
+                <a href="../articles.html" class="active">最新文章</a>
                 <a href="../tutorials.html">使用教程</a>
                 <a href="../index.html#faq">常见问题</a>
+                <a href="../index.html#about">关于我</a>
             </nav>
+            <div class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 
-    <main class="section-container" style="background-color: white; padding: 3rem; border: 2px solid var(--border-color); border-radius: var(--border-handdrawn); box-shadow: 4px 4px 0px rgba(68, 64, 60, 0.1); margin-top: 8rem;">
+    <main class="section-container" style="background-color: white; padding: 3rem; border: 2px solid var(--border-color); border-radius: var(--border-handdrawn); box-shadow: 4px 4px 0px rgba(68, 64, 60, 0.1); margin-top: 8rem; max-width: 900px;">
         
         <nav aria-label="breadcrumb" class="breadcrumb">
             <a href="../index.html">首页</a> &gt; <a href="../articles.html">最新文章</a> &gt; ${articleTitle}
@@ -258,7 +228,7 @@ async function generateArticle() {
         </script>
         <article>
             <h1 style="border-bottom: 2px dashed var(--main-color); padding-bottom: 1rem; margin-bottom: 2rem;">${articleTitle}</h1>
-            <div class="content" style="line-height: 1.8; font-size: 1.1rem;">
+            <div class="content" style="line-height: 1.8; font-size: 1.1rem; color: #333;">
                 ${content}
             </div>
         </article>
@@ -289,7 +259,7 @@ async function generateArticle() {
 
         // Write article file
         fs.writeFileSync(path.join(__dirname, 'articles', filename), template);
-        console.log(`Successfully generated article: ${filename}`);
+        console.log(`✅ Successfully generated article: ${filename}`);
 
         // Update articles.html list
         const articlesHtmlPath = path.join(__dirname, 'articles.html');
@@ -302,16 +272,17 @@ async function generateArticle() {
                 </a>`;
                 
         // Insert right after <div class="grid-container">
-        articlesHtml = articlesHtml.replace('<div class="grid-container">', `<div class="grid-container">${newLinkHtml}`);
+        articlesHtml = articlesHtml.replace('<div class="grid-container">', `<div class="grid-container">\n${newLinkHtml}`);
         fs.writeFileSync(articlesHtmlPath, articlesHtml);
         
-        console.log("Successfully updated articles.html");
+        console.log("✅ Successfully updated articles.html");
         return filename;
         
     } catch (e) {
-        console.error("Error generating article:", e);
-        process.exit(1);
+        console.error("❌ Error generating article:", e);
+        // 不退出，如果是批量生成可能还有下一篇
     }
+    return null;
 }
 
 async function pushToIndexNow(urls) {
@@ -342,45 +313,34 @@ async function pushToIndexNow(urls) {
     }
 }
 
-
 function updateSitemap(urls) {
-    const _fs = require('fs');
-    const _path = require('path');
-    const sitemapPath = _path.join(__dirname, 'sitemap.xml');
-    if (!_fs.existsSync(sitemapPath)) return;
+    const sitemapPath = path.join(__dirname, 'sitemap.xml');
+    if (!fs.existsSync(sitemapPath)) return;
     
-    let sitemap = _fs.readFileSync(sitemapPath, 'utf8');
+    let sitemap = fs.readFileSync(sitemapPath, 'utf8');
     const todayStr = new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0];
     
     let newEntries = "";
     urls.forEach(url => {
-        newEntries += '\n  <url>\n    <loc>' + url + '</loc>\n    <lastmod>' + todayStr + '</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>';
+        newEntries += `\n  <url>\n    <loc>${url}</loc>\n    <lastmod>${todayStr}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
     });
     
     sitemap = sitemap.replace('</urlset>', newEntries + '\n</urlset>');
-    _fs.writeFileSync(sitemapPath, sitemap, 'utf8');
+    fs.writeFileSync(sitemapPath, sitemap, 'utf8');
     console.log("✅ 成功更新 sitemap.xml");
 }
 
 async function main() {
     const generatedUrls = [];
-    for (let i = 0; i < 2; i++) {
-        console.log(`\n--- 准备生成今天第 ${i + 1} 篇文章 ---`);
-        const filename = await generateArticle();
-        if (filename) {
-            generatedUrls.push(`https://clashx.cloud/articles/${filename}`);
-        }
-        if (i < 1) {
-            console.log("等待 5 秒防止 API 频率限制...");
-            await new Promise(r => setTimeout(r, 5000));
-        }
-    }
-    console.log("今日文章生成完毕！");
-    
-    if (generatedUrls.length > 0) {
+    // 每日生成 1 篇高质量文章即可，贵精不贵多
+    console.log(`\n--- 开始生成高质量科普指南 ---`);
+    const filename = await generateArticle();
+    if (filename) {
+        generatedUrls.push(`https://clashx.cloud/articles/${filename}`);
         await pushToIndexNow(generatedUrls);
         updateSitemap(generatedUrls);
     }
+    console.log("✅ 今日优质文章生成完毕！");
 }
 
 main();

@@ -26,19 +26,21 @@ const navTemplate = `    <header class="navbar">
             </div>
             <nav class="nav-links" id="nav-links">
                 <a href="index.html">首页导航</a>
+                <a href="nav.html">网址导航</a>
+                <a href="free-id.html">免费ID共享</a>
                 <div class="dropdown">
                     <a href="javascript:void(0)" class="dropbtn">机场评测 ▾</a>
                     <div class="dropdown-content">
                         <a href="review-guangsu.html">光速云评测</a>
-                        <a href="review-ermao.html">二猫云评测</a>
-                        <a href="review-唯兔云.html">唯兔云评测</a>
-                        <a href="review-极连云.html">极连云评测</a>
+                        <a href="review-飞猫云.html">飞猫云评测</a>
                         <a href="review-全球云.html">全球云评测</a>
+                        <a href="review-唯兔云.html">唯兔云评测</a>
+                        <a href="review-ermao.html">二猫云评测</a>
+                        <a href="review-极连云.html">极连云评测</a>
                         <a href="review-光年梯.html">光年梯评测</a>
                         <a href="review-山水云.html">山水云评测</a>
                         <a href="review-星岛梦.html">星岛梦评测</a>
                         <a href="review-u1s1.html">u1s1评测</a>
-                        <a href="review-飞猫云.html">飞猫云评测</a>
                         <a href="all-reviews.html" style="border-top: 1px dashed var(--main-color); margin-top: 0.5rem; color: #EA580C; font-weight: bold;">查看所有评测</a>
                     </div>
                 </div>

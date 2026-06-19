@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clash Verge Rev 新手使用教程 - ClashX 总控</title>
-    <meta name="description" content="Windows / macOS 平台最推荐的客户端，完美支持各大机场订阅。">
-    <meta name="keywords" content="科学上网教程, Clash Verge Rev 新手使用教程">
-    <link rel="stylesheet" href="../style.css">
+    <meta name="description" content="Windows / macOS 平台最推荐的客户端，完美支持各大机场订阅。提供详尽的图文教程，小白也能轻松上手。">
+    <meta name="keywords" content="科学上网教程, Clash Verge Rev 新手使用教程, Clash Verge Rev 下载">
+    <link rel="stylesheet" href="../style.css?v=3">
+    <link rel="manifest" href="../manifest.json">
 </head>
 <body>
+    <canvas id="bg-canvas"></canvas>
+
     <header class="navbar">
         <div class="nav-container">
             <div class="logo">
@@ -22,49 +25,130 @@
                     <a href="javascript:void(0)" class="dropbtn">机场评测 ▾</a>
                     <div class="dropdown-content">
                         <a href="../review-guangsu.html">光速云评测</a>
+                        <a href="../review-飞猫云.html">飞猫云评测</a>
+                        <a href="../review-全球云.html">全球云评测</a>
+                        <a href="../review-唯兔云.html">唯兔云评测</a>
                         <a href="../review-ermao.html">二猫云评测</a>
                         <a href="../all-reviews.html" style="border-top: 1px dashed var(--main-color); margin-top: 0.5rem; color: #EA580C; font-weight: bold;">查看所有评测</a>
                     </div>
                 </div>
                 <a href="../articles.html">最新文章</a>
-                <a href="../tutorials.html">使用教程</a>
+                <a href="../tutorials.html" class="active">使用教程</a>
                 <a href="../index.html#faq">常见问题</a>
+                <a href="../index.html#about">关于我</a>
             </nav>
+            <div class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </div>
         </div>
     </header>
 
-    <main class="section-container" style="background-color: white; padding: 3rem; border: 2px solid var(--border-color); border-radius: var(--border-handdrawn); box-shadow: 4px 4px 0px rgba(68, 64, 60, 0.1); margin-top: 2rem;">
-        <article>
-            <h1 style="border-bottom: 2px dashed var(--main-color); padding-bottom: 1rem; margin-bottom: 2rem;">Clash Verge Rev 新手使用教程</h1>
-            <div class="intro" style="background-color: var(--secondary-color); padding: 1rem; border-radius: 10px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
-                <strong>💡 导语：</strong> Windows / macOS 平台最推荐的客户端，完美支持各大机场订阅。
+    <main class="section-container" style="margin-top: 8rem; max-width: 900px;">
+        <div class="tutorial-header">
+            <h1>🚀 Clash Verge Rev 新手使用教程</h1>
+        </div>
+        
+        <div class="tutorial-intro">
+            <strong>💡 导语：</strong> Clash Verge Rev 是目前 Windows 和 macOS 平台上最受欢迎、界面最现代的开源网络加速客户端。它内置了强大的 Meta 内核，完美支持各个机场的订阅链接。无论您是电脑小白还是进阶极客，都强烈推荐使用此客户端。
+        </div>
+
+        <div class="timeline">
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>下载与安装软件</h3>
+                <p>首先，您需要下载并安装 Clash Verge Rev 客户端。为了方便，我们为您准备了官方的安全直链下载：</p>
+                
+                <div class="download-group">
+                    <a href="https://github.com/clash-verge-rev/clash-verge-rev/releases/latest" target="_blank" class="btn-download">
+                        ⏬ Windows 64位下载
+                    </a>
+                    <a href="https://github.com/clash-verge-rev/clash-verge-rev/releases/latest" target="_blank" class="btn-download mac">
+                        🍎 Mac (Intel/M芯片) 下载
+                    </a>
+                </div>
+
+                <div class="alert-box alert-warning">
+                    ⚠️ <strong>注意：</strong> 如果您在 Windows 上运行提示缺少 WebView2，请根据软件提示点击“确认”自动下载组件，或手动下载安装。
+                </div>
+
+                <img src="../images/step1.png" alt="下载安装" style="width:100%; max-width:500px; border-radius:10px; display:block; margin: 1.5rem auto; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
             </div>
-            <div class="content" style="line-height: 1.8; font-size: 1.1rem;">
-                <h2>1. 下载安装</h2><p>前往 Github 下载最新版 Clash Verge Rev。</p><h2>2. 导入订阅</h2><p>在机场后台复制订阅链接，在软件的“订阅”界面粘贴并导入。</p><h2>3. 开启代理</h2><p>在设置中开启“系统代理”，在“代理”界面选择节点即可。</p>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>获取并复制机场订阅链接</h3>
+                <p>购买完机场套餐后，进入机场的官网后台（也叫控制面板）。在仪表盘主页找到类似 <strong>“一键订阅”</strong> 或 <strong>“Clash 订阅”</strong> 的按钮，点击并选择 <strong>“复制订阅链接”</strong>。</p>
+                
+                <img src="../images/step2.png" alt="导入配置" style="width:100%; max-width:500px; border-radius:10px; display:block; margin: 1.5rem auto; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
             </div>
-        </article>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>在客户端导入订阅</h3>
+                <p>打开 Clash Verge Rev，在左侧菜单栏点击 <strong>“订阅” (Profiles)</strong>。</p>
+                <p>在顶部的输入框中，<strong>粘贴</strong> 您刚刚复制的机场订阅链接，然后点击旁边的 <strong>“导入” (Import)</strong> 按钮。</p>
+
+                
+
+                <p>导入成功后，您会在下方看到一个新的配置卡片。请 <strong>点击选中（左键单击）</strong> 这个卡片，让它的背景变成选中状态。</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3>选择节点与模式</h3>
+                <p>点击左侧菜单栏的 <strong>“代理” (Proxies)</strong>，您会看到所有的国家和地区节点。</p>
+                <p>首先，在右上角确认您的代理模式选为 <strong>“规则” (Rule)</strong>。这是最智能的模式，国内网站直连，国外网站走代理。</p>
+                <p>然后，在下方的节点列表中，点击选择一个您喜欢的节点，比如“🇭🇰 香港 01”或“🇯🇵 日本 01”。</p>
+
+                <div class="alert-box alert-info">
+                    💡 <strong>提示：</strong> 如果不知道选哪个，可以选择“自动选择 (Auto)”或者点击右上角的“闪电图标”测试延迟，选择一个绿色的低延迟节点即可。
+                </div>
+
+                <img src="../images/step3.png" alt="选择节点开启代理" style="width:100%; max-width:500px; border-radius:10px; display:block; margin: 1.5rem auto; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card">
+                <div class="step-number">5</div>
+                <h3>开启系统代理，开始冲浪！</h3>
+                <p>最后也是最关键的一步！点击左侧菜单栏的 <strong>“设置” (Settings)</strong>。</p>
+                <p>找到 <strong>“系统代理” (System Proxy)</strong> 选项，将其右侧的开关打开（变成亮色）。</p>
+                
+                
+
+                <p>恭喜您！🎉 当系统代理开启后，您的电脑就已经成功连接到了国际网络。您现在可以打开浏览器，尝试访问 Google 或 YouTube 了！</p>
+            </div>
+            
+            <!-- Step 6 -->
+            <div class="step-card" style="background-color: #F8FAFC;">
+                <div class="step-number" style="background-color: #64748B;">?</div>
+                <h3>❓ 常见问题排查 (FAQ)</h3>
+                
+                <h4 style="margin-top: 0;">1. 节点都超时了，连不上怎么办？</h4>
+                <p>请点击“订阅”界面，找到您的机场卡片，右键点击“更新 (Update)”。很多时候是因为机场换了服务器 IP，您需要更新订阅才能获取最新节点。</p>
+
+                <h4>2. 为什么开启了系统代理，还是上不了 Google？</h4>
+                <p>请检查您的电脑系统时间是否准确。科学上网要求您的电脑时间与标准时间误差不能超过一两分钟。如果是 Windows，请进入时间设置，点击“立即同步”。</p>
+
+                <h4>3. 不用了怎么关掉？</h4>
+                <p>在“设置”里，将“系统代理”的开关关闭即可恢复正常国内网络状态。建议在不需要翻墙时关闭代理，以免影响部分国内游戏或特定软件的速度。</p>
+            </div>
+        </div>
         
         <div style="margin-top: 3rem; text-align: center;">
-            <a href="../index.html" class="btn-primary">← 返回首页探索更多节点</a>
+            <a href="../index.html" class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2.5rem;">← 返回首页挑选精品机场</a>
         </div>
     </main>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-links">
-                <h3>友情链接</h3>
-                <a href="https://vpnsgocn.com/" target="_blank">VPN风暴云</a>
-                <a href="https://fanfanqiang.net/" target="_blank">翻茄笔记</a>
-                <a href="https://clashhub.cloud/" target="_blank">VPN魔法</a>
-            </div>
-            <div class="footer-links">
-                <h3>关于</h3>
-                <p>ClashX 总控 - 稳定高速的机场导航与教程。</p>
-            </div>
-        </div>
         <div class="footer-bottom">
             <p>&copy; 2026 ClashX 总控 Prompt. All Rights Reserved.</p>
         </div>
     </footer>
+    <script src="../script.js"></script>
 </body>
 </html>

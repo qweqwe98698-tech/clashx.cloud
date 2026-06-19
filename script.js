@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dropdowns.forEach(dropdown => {
         const dropbtn = dropdown.querySelector('.dropbtn');
         dropbtn.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 1100) {
                 e.preventDefault();
                 const content = dropdown.querySelector('.dropdown-content');
                 content.style.display = content.style.display === 'block' ? 'none' : 'block';
@@ -28,11 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const targetId = this.getAttribute('href');
             if(targetId === '#') return;
-            const targetElement = document.querySelector(targetId);
-            if(targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            try {
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.scrollY - 100; // 100px header offset
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (err) {
+                console.warn('Invalid selector:', targetId, err);
             }
         });
     });
@@ -151,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Click to copy & redirect logic
     document.querySelectorAll('.copy-coupon').forEach(el => {
         el.addEventListener('click', function(e) {
             e.preventDefault();
@@ -170,5 +176,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Smooth scroll on load if there's a hash
+    if (window.location.hash) {
+        const hash = window.location.hash;
+        // Small delay to ensure the page is fully rendered before calculating scroll position
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                try {
+                    const targetElement = document.querySelector(hash);
+                    if (targetElement) {
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.scrollY - 100; // 100px header offset
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                } catch (err) {
+                    console.warn('Invalid selector on load hash:', hash, err);
+                }
+            }, 150);
+        });
+    }
 
 });

@@ -3,68 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>v2rayN Windows 使用教程 - ClashX 总控</title>
-    <meta name="description" content="经典老牌客户端，支持多种协议。">
-    <meta name="keywords" content="科学上网教程, v2rayN Windows 使用教程">
-    <link rel="stylesheet" href="../style.css">
+    <title>v2rayN 新手使用教程 - ClashX 总控</title>
+    <meta name="description" content="Windows 平台上经典的轻量级代理工具，占用内存小。">
+    <link rel="stylesheet" href="../style.css?v=3">
 </head>
 <body>
+    <canvas id="bg-canvas"></canvas>
     <header class="navbar">
         <div class="nav-container">
-            <div class="logo">
-                <a href="../index.html">✨ ClashX 总控 Prompt</a>
-            </div>
-            <nav class="nav-links" id="nav-links">
+            <div class="logo"><a href="../index.html">✨ ClashX 总控 Prompt</a></div>
+            <nav class="nav-links">
                 <a href="../index.html">首页导航</a>
-                <a href="../nav.html">网址导航</a>
-                <a href="../free-id.html">免费ID共享</a>
-                <div class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">机场评测 ▾</a>
-                    <div class="dropdown-content">
-                        <a href="../review-guangsu.html">光速云评测</a>
-                        <a href="../review-ermao.html">二猫云评测</a>
-                        <a href="../all-reviews.html" style="border-top: 1px dashed var(--main-color); margin-top: 0.5rem; color: #EA580C; font-weight: bold;">查看所有评测</a>
-                    </div>
-                </div>
-                <a href="../articles.html">最新文章</a>
-                <a href="../tutorials.html">使用教程</a>
-                <a href="../index.html#faq">常见问题</a>
+                <a href="../tutorials.html" class="active">使用教程</a>
             </nav>
         </div>
     </header>
 
-    <main class="section-container" style="background-color: white; padding: 3rem; border: 2px solid var(--border-color); border-radius: var(--border-handdrawn); box-shadow: 4px 4px 0px rgba(68, 64, 60, 0.1); margin-top: 2rem;">
-        <article>
-            <h1 style="border-bottom: 2px dashed var(--main-color); padding-bottom: 1rem; margin-bottom: 2rem;">v2rayN Windows 使用教程</h1>
-            <div class="intro" style="background-color: var(--secondary-color); padding: 1rem; border-radius: 10px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
-                <strong>💡 导语：</strong> 经典老牌客户端，支持多种协议。
+    <main class="section-container" style="margin-top: 8rem; max-width: 900px;">
+        <div class="tutorial-header">
+            <h1>🚀 v2rayN 新手使用教程</h1>
+        </div>
+        
+        <div class="tutorial-intro">
+            <strong>💡 导语：</strong> Windows 平台上经典的轻量级代理工具，占用内存小。
+        </div>
+
+        <div class="timeline">
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>下载与安装软件</h3>
+                <p>前往 Github 下载 v2rayN-Core.zip，解压到一个安全的文件夹中，双击 v2rayN.exe 运行（如果提示需要 .NET 框架请按提示安装）。</p>
+                <img src="../images/step1.png" alt="下载安装" style="width:100%; max-width:500px; border-radius:10px; display:block; margin: 1.5rem auto; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
             </div>
-            <div class="content" style="line-height: 1.8; font-size: 1.1rem;">
-                <h2>1. 下载</h2><p>下载免安装版本，解压后运行 v2rayN.exe。</p><h2>2. 订阅设置</h2><p>点击“订阅”->“订阅设置”，添加机场订阅链接。</p><h2>3. 更新与开启</h2><p>右键系统托盘图标，开启系统代理并设置为自动配置系统代理。</p>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>获取并导入订阅链接</h3>
+                <p>登录机场后台，复制“V2Ray 订阅链接”。在 v2rayN 软件主界面上方点击“订阅”->“订阅设置”，点击“添加”，输入备注，将 URL 粘贴进去并保存。然后回到主界面，点击“订阅”->“更新订阅(不通过代理)”。</p>
+                <img src="../images/step2.png" alt="导入配置" style="width:100%; max-width:500px; border-radius:10px; display:block; margin: 1.5rem auto; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
             </div>
-        </article>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>选择节点与开启代理</h3>
+                <p>更新完成后，节点列表会显示出来。右键点击其中一个节点，选择“设为活动服务器”。最后，右键点击电脑右下角的 v2rayN 托盘图标（蓝色或红色的V字），在“系统代理”菜单中选择“自动配置系统代理”即可。</p>
+                <img src="../images/step3.png" alt="选择节点开启代理" style="width:100%; max-width:500px; border-radius:10px; display:block; margin: 1.5rem auto; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
+            </div>
+            
+            <!-- FAQ -->
+            <div class="step-card" style="background-color: #F8FAFC;">
+                <div class="step-number" style="background-color: #64748B;">?</div>
+                <h3>❓ 常见问题排查 (FAQ)</h3>
+                <h4>1. 连不上怎么办？</h4>
+                <p>请尝试更新订阅，并检查电脑/手机的时间是否准确（不能有误差）。</p>
+                <h4>2. 国内网站变慢？</h4>
+                <p>请确认客户端处于“规则/分流”模式，而不是全局模式。</p>
+            </div>
+        </div>
         
         <div style="margin-top: 3rem; text-align: center;">
-            <a href="../index.html" class="btn-primary">← 返回首页探索更多节点</a>
+            <a href="../index.html" class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2.5rem;">← 返回首页挑选精品机场</a>
         </div>
     </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-links">
-                <h3>友情链接</h3>
-                <a href="https://vpnsgocn.com/" target="_blank">VPN风暴云</a>
-                <a href="https://fanfanqiang.net/" target="_blank">翻茄笔记</a>
-                <a href="https://clashhub.cloud/" target="_blank">VPN魔法</a>
-            </div>
-            <div class="footer-links">
-                <h3>关于</h3>
-                <p>ClashX 总控 - 稳定高速的机场导航与教程。</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 ClashX 总控 Prompt. All Rights Reserved.</p>
-        </div>
-    </footer>
 </body>
 </html>
