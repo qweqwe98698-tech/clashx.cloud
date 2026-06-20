@@ -1,0 +1,91 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Comments from '../../components/Comments.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('blog');
+  return blogEntries.map(entry => ({
+    params: { slug: entry.id }, props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={`${entry.data.title} - My Blog`}>
+  <article class="container blog-post animate-fade-in">
+    <header class="post-header">
+      <div class="tags">
+        {entry.data.tags.map(tag => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+      <h1>{entry.data.title}</h1>
+      <div class="meta">
+        <span>{entry.data.author}</span>
+        <span class="separator">•</span>
+        <time>{entry.data.pubDate.toLocaleDateString()}</time>
+      </div>
+    </header>
+
+    <div class="prose content-body">
+      <Content />
+    </div>
+
+    <Comments />
+  </article>
+</Layout>
+
+<style>
+  .blog-post {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 4rem;
+  }
+
+  .post-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .post-header h1 {
+    font-size: 2.8rem;
+    line-height: 1.2;
+    margin: 1rem 0;
+  }
+
+  .tags {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    background: #f0f7ff;
+    color: var(--accent-primary);
+    padding: 0.2rem 0.8rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .meta {
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  .separator {
+    margin: 0 0.5rem;
+    color: #e5e5ea;
+  }
+
+  .content-body {
+    font-size: 1.15rem;
+  }
+</style>

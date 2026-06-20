@@ -1,0 +1,54 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title = "机场推荐 | 2026高速机场介绍流媒体解锁VPN|记录温度的我", description = "专注高性价比机场评测、网络代理教程与个人技术沉淀。" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    
+    <!-- Microsoft Clarity Heatmap Tracking -->
+    <script type="text/javascript" is:inline>
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "YOUR_CLARITY_ID_HERE");
+    </script>
+    
+    <ClientRouter />
+  </head>
+  <body>
+    <Nav />
+    
+    <main>
+      <slot />
+    </main>
+
+    <Footer />
+    <SearchModal />
+
+    <style>
+      main {
+        min-height: calc(100vh - 160px);
+        padding-top: 100px;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,132 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+---
+
+<Layout title="机场推荐 | 2026高速机场介绍流媒体解锁VPN|记录温度的我">
+  <!-- Hero Section -->
+  <div class="container hero-section">
+    <h1 class="animate-fade-in">你好，欢迎来到 <span class="text-accent">Orbit</span> 👋</h1>
+    <p class="subtitle animate-fade-in delay-100">专注高性价比机场评测、网络代理教程与个人技术沉淀。</p>
+    <div class="actions animate-fade-in delay-200">
+      <a href="/blog" class="btn-primary">阅读评测与教程</a>
+      <a href="/notes" class="btn-secondary">浏览知识库</a>
+    </div>
+  </div>
+
+  <div class="container recent-posts animate-fade-in delay-300">
+    <h2 class="section-title">最新文章</h2>
+    <div class="post-grid">
+      {recentPosts.map(post => (
+        <a href={`/blog/${post.id}`} class="glass-panel post-card">
+          <h3>{post.data.title}</h3>
+          <p class="date">{post.data.pubDate.toLocaleDateString()}</p>
+          <p class="desc">{post.data.description}</p>
+          <div class="tags">
+            {post.data.tags.map(tag => (
+              <span class="tag">#{tag}</span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .hero-section {
+    padding: 6rem 0 4rem;
+    max-width: 800px;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .text-accent {
+    color: var(--accent-primary);
+  }
+
+  .subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .recent-posts {
+    margin-top: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+    font-weight: 600;
+  }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .post-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+    line-height: 1.6;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    background: #f0f7ff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+</style>

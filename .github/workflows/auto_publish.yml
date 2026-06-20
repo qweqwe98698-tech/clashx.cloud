@@ -3,13 +3,13 @@ name: Daily Article Auto Publish
 on:
   schedule:
     - cron: '0 2 * * *' # 每天北京时间上午 10 点 (UTC 2)
-  workflow_dispatch: # 允许手动触发 (和您截图里一样)
+  workflow_dispatch: # 允许手动触发
 
 permissions:
   contents: write
 
 jobs:
-  generate-and-publish:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,24 +19,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
+      - name: Install Dependencies
+        run: npm install
 
       - name: Generate Daily Article
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: node generate_daily_article.js
+        run: node scripts/generate_daily_article.js
 
       - name: Update Apple ID Passwords
-        run: node update_apple_id.js
+        run: node scripts/update_apple_id.js
 
-      - name: Commit and Push changes
+      - name: Build Astro Site
+        run: npm run build
+
+      - name: Commit Data Changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Auto-generated daily article" -a || echo "No changes to commit"
+          git add src/content/
+          git commit -m "Auto-generated daily article & Apple ID updates" || echo "No changes to commit"
           git push
 
       - name: 📂 Sync files to FTP server
@@ -45,10 +50,10 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ./
+          server-dir: public_html/clashx.cloud/
+          local-dir: ./dist/
           port: 21
           timeout: 120000
           exclude: |
             **/.git*
             **/.git*/**
-            **/node_modules/**

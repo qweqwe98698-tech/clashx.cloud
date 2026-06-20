@@ -1,0 +1,117 @@
+---
+import { getCollection } from 'astro:content';
+
+const allNotes = await getCollection('notes');
+
+const groupedNotes = allNotes.reduce((acc, note) => {
+  const parts = note.id.split('/');
+  const folder = parts.length === 1 ? '根目录' : parts[0];
+  
+  if (!acc[folder]) {
+    acc[folder] = [];
+  }
+  acc[folder].push(note);
+  return acc;
+}, {} as Record<string, any[]>);
+
+const folders = Object.keys(groupedNotes).sort();
+---
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h3>🌲 知识库</h3>
+  </div>
+  <div class="sidebar-content">
+    {folders.map(folder => (
+      <div class="folder">
+        <div class="folder-name">{folder}</div>
+        <ul class="file-list">
+          {groupedNotes[folder].map(note => (
+            <li>
+              <a href={`/notes/${note.id}`} class="file-link">
+                {note.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--card-border);
+    padding-right: 1.5rem;
+    height: calc(100vh - 100px);
+    position: sticky;
+    top: 80px;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+
+  .folder {
+    margin-bottom: 1.25rem;
+  }
+
+  .folder-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .file-list li {
+    margin-bottom: 0.3rem;
+  }
+
+  .file-link {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    transition: background var(--transition-fast);
+  }
+
+  .file-link:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--accent-primary);
+  }
+
+  [data-theme='dark'] .file-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: static;
+      border-right: none;
+      border-bottom: 1px solid var(--card-border);
+      padding-right: 0;
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+  }
+</style>

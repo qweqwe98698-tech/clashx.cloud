@@ -1,0 +1,53 @@
+---
+title: "macOS 科学上网指南：ClashX Pro 与 Surge 极简配置教程"
+updatedDate: 2026-06-20
+---
+
+import AirportCard from '../../components/AirportCard.astro';
+
+对于 macOS 用户来说，得益于苹果生态的封闭与精致，优质的代理工具也同样具备极高的颜值和极简的交互。目前 Mac 平台上最主流的科学上网工具分别是免费开源的 **ClashX Pro** 和功能极其强大的付费软件 **Surge Mac**。
+
+> [!TIP]
+> **Mac 用户专属推荐**
+> Mac 用户通常对网络质量和软件体验有极高的要求，尤其是外贸办公和跨国团队协作。站长强烈推荐搭配极其稳定的企业级专线“速界”，让你告别转圈和断流。
+
+<AirportCard 
+  name="速界" 
+  price="25" 
+  tags={['企业办公', '高速专线', '流媒体解锁']} 
+  affLink="https://guangs.speedworldaff.cc/#/register?code=xgXzEfZB" 
+  isRecommend={true} 
+/>
+
+## 一、 ClashX Pro 新手极简教程（免费推荐）
+
+ClashX Pro 是目前绝大多数 Mac 用户的首选，轻量、稳定且完全免费。
+
+1. **下载与安装**：前往 GitHub 搜索 ClashX Pro（注意不是普通的 ClashX），下载 `.dmg` 安装包并拖入应用程序文件夹。首次打开如遇系统拦截，请前往“系统设置 -> 隐私与安全性”中点击“仍要打开”。
+2. **导入订阅**：打开你的机场后台，点击“一键导入 Clash”。此时浏览器会弹窗请求打开 ClashX Pro，允许即可。
+3. **开启代理**：点击状态栏顶部的小猫咪图标，在“出站规则”中选择“规则 (Rule)”，然后勾选“设置为系统代理”。
+4. **增强模式 (Enhanced Mode)**：这是 Pro 版本的核心功能！在状态栏菜单中开启“增强模式”，此时它将接管 Mac 的全局流量，终端 (Terminal) 和部分不走系统代理的 App 也能完美翻墙了。
+
+*(此处应有状态栏小猫咪菜单的截图)*
+
+## 二、 Surge Mac 进阶配置（极客首选）
+
+如果你是网络工程师或者极客玩家，并且愿意支付高昂的授权费，Surge Mac 能为你提供抓包、模块化重写、网关路由等骨灰级功能。
+
+1. **导入配置**：在机场后台复制“Surge 订阅托管链接”。
+2. **下载配置**：打开 Surge，点击顶部“配置”，选择“从 URL 下载配置”。
+3. **设为系统代理与接管**：勾选“系统代理”以及“增强模式 (Enhanced Mode)”。Surge 的增强模式基于虚拟网卡 (VIF)，极其稳定。
+
+---
+
+> [!IMPORTANT]
+> **Mac 睡眠唤醒后断网？**
+> 有些 Mac 设备在休眠唤醒后，代理工具可能会短暂卡死。此时只需在状态栏将工具退出并重新打开即可恢复。
+> 如果你觉得速界稍微超出了预算，这款主打高端但价格稍亲民的“宇宙云”同样是 Mac 的好伴侣：
+
+<AirportCard 
+  name="宇宙云" 
+  price="30" 
+  tags={['高端专线', '稳定低延迟', '多地区节点']} 
+  affLink="https://guangs.yuzoucloud.cc/#/register?code=yrThwMP1" 
+/>

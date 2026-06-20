@@ -1,0 +1,112 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title="博客文章 - ClashX Cloud">
+  <div class="container page-header animate-fade-in">
+    <h1>文章归档</h1>
+    <p class="subtitle">记录技术与生活的所有思考。</p>
+  </div>
+
+  <div class="container blog-list animate-fade-in delay-100">
+    {sortedPosts.map(post => (
+      <article class="blog-item">
+        <div class="meta">
+          <time>{post.data.pubDate.toLocaleDateString()}</time>
+        </div>
+        <div class="content">
+          <h2><a href={`/blog/${post.id}`}>{post.data.title}</a></h2>
+          <p>{post.data.description}</p>
+          <div class="tags">
+            {post.data.tags.map(tag => (
+              <span class="tag">#{tag}</span>
+            ))}
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</Layout>
+
+<style>
+  .page-header {
+    margin-bottom: 3rem;
+  }
+  
+  .page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .blog-item {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .blog-item:last-child {
+    border-bottom: none;
+  }
+
+  .meta {
+    flex-shrink: 0;
+    width: 120px;
+    padding-top: 0.3rem;
+  }
+
+  .meta time {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-family: monospace;
+  }
+
+  .content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .content h2 a {
+    color: var(--text-primary);
+  }
+
+  .content h2 a:hover {
+    color: var(--accent-primary);
+  }
+
+  .content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 0.8rem;
+    color: var(--accent-primary);
+  }
+
+  @media (max-width: 768px) {
+    .blog-item {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .meta {
+      width: 100%;
+    }
+  }
+</style>

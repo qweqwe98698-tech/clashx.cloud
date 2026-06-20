@@ -1,0 +1,125 @@
+---
+import NotesLayout from '../../layouts/NotesLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const noteEntries = await getCollection('notes');
+  return noteEntries.map(entry => ({
+    params: { slug: entry.id }, props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+// Compute Backlinks
+const allNotes = await getCollection('notes');
+const backlinks = allNotes.filter(n => 
+  n.id !== entry.id && 
+  n.body && 
+  (n.body.includes(`[[${entry.data.title}]]`) || n.body.includes(`[[${entry.id}]]`))
+);
+---
+
+<NotesLayout title={`${entry.data.title} - 数字花园`} headings={headings}>
+  <article class="prose content-body">
+    <header class="note-header">
+      <h1>{entry.data.title}</h1>
+      {entry.data.updatedDate && (
+        <div class="meta">最后更新于: {entry.data.updatedDate.toLocaleDateString()}</div>
+      )}
+    </header>
+
+    <Content />
+
+    {backlinks.length > 0 && (
+      <div class="backlinks-section">
+        <h3>🔗 反向链接</h3>
+        <p>以下笔记提到了当前页面：</p>
+        <ul class="backlinks-list">
+          {backlinks.map(b => (
+            <li>
+              <a href={`/notes/${b.id}`} class="backlink-card">
+                <h4>{b.data.title}</h4>
+                <span class="backlink-path">{b.id}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </article>
+</NotesLayout>
+
+<style>
+  .note-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .note-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .meta {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-family: monospace;
+  }
+
+  /* Backlinks Styles */
+  .backlinks-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px dashed var(--card-border);
+  }
+
+  .backlinks-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .backlinks-section p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .backlinks-list {
+    list-style: none !important;
+    padding: 0 !important;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .backlink-card {
+    display: block;
+    padding: 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    text-decoration: none !important;
+    transition: all var(--transition-fast);
+    background: var(--card-bg);
+  }
+
+  .backlink-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .backlink-card h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+
+  .backlink-path {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+  }
+</style>

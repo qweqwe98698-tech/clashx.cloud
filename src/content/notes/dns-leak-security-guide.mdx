@@ -1,0 +1,45 @@
+---
+title: "安全避险指南：什么是 DNS 泄露？如何彻底隐藏你的真实 IP"
+updatedDate: 2026-06-20
+---
+
+import AirportCard from '../../components/AirportCard.astro';
+
+很多人认为，只要代理软件显示“已连接”，自己就是绝对安全的了。实际上，大部分小白的电脑无时无刻不在“裸奔”，真实 IP 早就暴露无遗。这背后的罪魁祸首，通常是 **DNS 泄露 (DNS Leak)** 和 **WebRTC 泄露**。
+
+> [!TIP]
+> **绝对的隐私：无日志机场**
+> 技术上的防泄露只是第一步，最底层的安全保障是你的服务商绝对不记录你的访问日志。极客们通常更偏爱低调、稳定、纯粹的老牌技术向机场：
+
+<AirportCard 
+  name="SOGO狗云" 
+  price="18" 
+  tags={['长期使用', '高性价比', '多节点覆盖']} 
+  affLink="https://guangs.sogoyunaff.cc/#/dashboard" 
+  isRecommend={true} 
+/>
+
+## 什么是 DNS 泄露？
+
+当你在浏览器输入 `google.com` 时，电脑需要先向 DNS 服务器查询这个域名的 IP。
+如果你开了代理，但查询域名的请求却没有走代理隧道，而是发给了国内的运营商（如中国电信），那么运营商就会立刻知道：你在尝试访问 Google。这就是 DNS 泄露。
+
+**如何测试？**
+打开浏览器访问 `ipleak.net`。如果在页面中看到了你真实宽带所在地的 IP 或中国运营商的旗帜，说明你已经严重泄露！
+
+**如何修复？**
+在 Clash 中，确保 `Fake-IP` 模式开启，并在配置文件的 `dns` 字段中，将 `nameserver` 设置为 `1.1.1.1` 等海外加密 DNS。
+
+## 什么是 WebRTC 泄露？
+
+这是一种浏览器底层技术，常用于网页端视频通话（如 Google Meet）。它会直接绕过很多代理插件，强行获取你的本地真实 IP。
+**修复方法**：在 Chrome 或 Edge 中安装如 `WebRTC Network Limiter` 等插件，将其设置为强行通过代理路由。
+
+隐私保护是一条长远的道路。唯兔云也是不少注重隐私的老用户的选择：
+
+<AirportCard 
+  name="唯兔云" 
+  price="14.9" 
+  tags={['老用户常用', '稳定节点', '多设备使用']} 
+  affLink="https://guangs.v2yunvipaff.com/#/?code=xIutqOBA" 
+/>
