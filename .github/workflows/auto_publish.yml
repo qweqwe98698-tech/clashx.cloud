@@ -30,8 +30,6 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node scripts/generate_daily_article.cjs
 
-      - name: Update Apple ID Passwords
-        run: node scripts/update_apple_id.js
 
       - name: Build Astro Site
         run: npm run build
