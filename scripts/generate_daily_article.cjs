@@ -138,7 +138,7 @@ import AirportCard from '../../components/AirportCard.astro';
   name="${a.name}" 
   price="${a.price}" 
   tags={['每日热搜', '高速通道', '防封锁']} 
-  affLink="#" 
+  affLink="https://qwerty.gsyaff.com/#/?code=keqgvT5Y" 
   isRecommend={true}
 />
 `).join('\n');

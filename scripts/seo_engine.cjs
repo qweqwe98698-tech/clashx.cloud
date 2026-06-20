@@ -123,7 +123,7 @@ ${intro} **${airport.name}**。
   name="${airport.name}" 
   price="${airport.price}" 
   tags={['千字长文剖析', '${airport.tags[0]}', '${airport.tags[1] || '稳定专线'}']} 
-  affLink="#" 
+  affLink="https://qwerty.gsyaff.com/#/?code=keqgvT5Y" 
   isRecommend={true}
 />
 
